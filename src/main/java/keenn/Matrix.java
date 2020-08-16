@@ -34,6 +34,31 @@ public class Matrix{
     }
 
     /**
+     * Creates new Matrix object from existing array
+     * @param matrix
+     */
+    public Matrix(float[][] matrix){
+        if(matrix != null){
+            int r = matrix.length;
+            int column = 0;
+            for(int row = 0; row < matrix.length; row++){
+                if(matrix[row].length > column)
+                    column = matrix[row].length;
+            }
+            createMatrix(r, column);
+            for(int row = 0; row < this.rows; row++){
+                for(int col = 0; col < this.columns; col++){
+                    float val = 0.0f;
+                    try{
+                        val = matrix[row][col];
+                    }catch(IndexOutOfBoundsException ioobe){}
+                    this.matrix[row][col] = val;
+                }
+            }
+        }
+    }
+
+    /**
      * Multiplies two matrices and returns new Matrix object with matrix as a result. 
      * Only works when amount of columns in first matrix equals to amount of rows in second and. 
      * Otherwise, returns default Matrix object.
@@ -128,6 +153,38 @@ public class Matrix{
     }
 
     /**
+     * Fills matrix with random numbers between 0 and 1
+     */
+    public void randomize(){
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                this.matrix[row][col] = (float)Math.random();
+            }
+        }
+    }
+
+    /**
+     * Fills matrix with random numbers between -limit and limit
+     * @param limit
+     */
+    public void randomize(float limit){
+        randomize(-1 * limit, limit);
+    }
+
+    /**
+     * Fills matrix with random numbers between limit1 and limit2
+     * @param limit1 - lower limit
+     * @param limit2 - upper limit
+     */
+    public void randomize(float limit1, float limit2){
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                this.matrix[row][col] = ((float)Math.random() * (limit2 - limit1)) + limit1;
+            }
+        }
+    }
+
+    /**
      * Creates matrix of float numbers in the Matrix object with specified 
      * amount of rows and columns
      * @param rows amount of rows in the matrix
@@ -197,6 +254,10 @@ public class Matrix{
             ioobe.printStackTrace();
         }
         return result;
+    }
+
+    public float[][] toArray(){
+        return this.matrix;
     }
 
     /**
