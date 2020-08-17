@@ -77,9 +77,9 @@ public class Matrix{
                 for(int col = 0; col < result.getColumns(); col++){
                     float num = 0.0f;
                     for(int i = 0; i < a.getColumns(); i++){
-                        num += a.getNum(row, i) * b.getNum(i, col);
+                        num += a.getVal(row, i) * b.getVal(i, col);
                     }
-                    result.setNum(row, col, num);
+                    result.setVal(row, col, num);
                 }
             }
         }catch(MatrixDifferentSizeException mdse){
@@ -103,20 +103,17 @@ public class Matrix{
     /**
      * Adds another matrix to this matrix element-wise
      * @param matrix
+     * @throws MatrixDifferentSizeException
      */
-    public void add(Matrix matrix){
-        try{
-            if(sameSize(matrix)){
-                for(int row = 0; row < this.rows; row++){
-                    for(int col = 0; col < this.columns; col++){
-                        this.matrix[row][col] += matrix.getNum(row, col);
-                    }
+    public void add(Matrix matrix) throws MatrixDifferentSizeException{
+        if(sameSize(matrix)){
+            for(int row = 0; row < this.rows; row++){
+                for(int col = 0; col < this.columns; col++){
+                    this.matrix[row][col] += matrix.getVal(row, col);
                 }
-            }else{
-                throw new MatrixDifferentSizeException("Connot add matrices with different sizes");
             }
-        }catch(MatrixDifferentSizeException mdse){
-            mdse.printStackTrace();
+        }else{
+            throw new MatrixDifferentSizeException("Connot add matrices with different sizes");
         }
     }
 
@@ -135,20 +132,17 @@ public class Matrix{
     /**
      * Multiplies matrix by another element-wise
      * @param matrix
+     * @throws MatrixDifferentSizeException
      */
-    public void mult(Matrix matrix){
-        try{
-            if(sameSize(matrix)){
-                for(int row = 0; row < this.rows; row++){
-                    for(int col = 0; col < this.columns; col++){
-                        this.matrix[row][col] *= matrix.getNum(row, col);
-                    }
+    public void mult(Matrix matrix) throws MatrixDifferentSizeException{
+        if(sameSize(matrix)){
+            for(int row = 0; row < this.rows; row++){
+                for(int col = 0; col < this.columns; col++){
+                    this.matrix[row][col] *= matrix.getVal(row, col);
                 }
-            }else{
-                throw new MatrixDifferentSizeException("Connot add matrices with different sizes");
             }
-        }catch(MatrixDifferentSizeException mdse){
-            mdse.printStackTrace();
+        }else{
+            throw new MatrixDifferentSizeException("Connot add matrices with different sizes");
         }
     }
 
@@ -217,7 +211,7 @@ public class Matrix{
             return false;
         for(int row = 0; row < this.rows; row++){
             for(int col = 0; col < this.columns; col++){
-                if(this.matrix[row][col] != matrix.getNum(row, col))
+                if(this.matrix[row][col] != matrix.getVal(row, col))
                     return false;
             }
         }
@@ -275,7 +269,7 @@ public class Matrix{
      * @param column
      * @return float number
      */
-    public float getNum(int row, int column){
+    public float getVal(int row, int column){
         float result = 0.0f;
         try{
             result = this.matrix[row][column];
@@ -296,7 +290,7 @@ public class Matrix{
      * @param value
      * @return
      */
-    public void setNum(int row, int column, float value){
+    public void setVal(int row, int column, float value){
         try{
             this.matrix[row][column] = value;
         }catch(IndexOutOfBoundsException ioobe){
