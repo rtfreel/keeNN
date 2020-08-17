@@ -241,6 +241,35 @@ public class Matrix{
     }
 
     /**
+     * Returns string view of matrix in a single line
+     * @return formatted string
+     */
+    public String singleLineView(){
+        StringBuilder result = new StringBuilder();
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                result.append(String.format("%.2f\t", this.matrix[row][col]));
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * Returns string view of matrix in a few lines like table
+     * @return formatted string
+     */
+    public String tableView(){
+        StringBuilder result = new StringBuilder();
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                result.append(String.format("%.9f\t|", this.matrix[row][col]));
+            }
+            result.append("\n");
+        }
+        return result.toString();
+    }
+
+    /**
      * Returns number from the specified position in the matrix
      * @param row
      * @param column
