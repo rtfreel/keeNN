@@ -38,6 +38,28 @@ public class Layer{
     }
 
     /**
+     * Performs calculations to move forward to the next layer
+     * @return Matrix object with the vector of signals going to the next layer
+     */
+    public Matrix solve(){
+        Matrix result = null;
+        result = Matrix.solve(synapses, this.toVector());
+        return result;
+    }
+
+    /**
+     * Collects signals of all neurons in the layer into the vector
+     * @return Matrix object with the vector
+     */
+    public Matrix toVector(){
+        Matrix result = new Matrix(this.size, 1);
+        for(int row = 0; row < this.size; row++){
+            result.setVal(row, 0, neurons[row].getOutput());
+        }
+        return result;
+    }
+
+    /**
      * Sets input value for every neuron.
      * If input size is smaller than neurons amount extra neurons has zero as an input
      * @param input Matrix object, only first row is matters, as a vector 
