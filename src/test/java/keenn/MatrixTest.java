@@ -31,6 +31,29 @@ public class MatrixTest{
             {6.0f, 2.0f, 1.0f}
         }
     };
+    float[][][] vectors = {
+        {
+            {1.0f},
+            {2.0f},
+            {3.0f}
+        },
+        {
+            {0.9f},
+            {0.8f}
+        }
+    };
+    float[][][] expectedVectors = {
+        {
+            {(0.1f * 1f) + (0.2f * 2f) + (0.3f * 3f)},
+            {(0.5f * 1f) + (0.6f * 2f) + (0.7f * 3f)}
+        },
+        
+        {
+            {(0.9f * 1f) + (0.8f * 3f)},
+            {(0.9f * 5f) + (0.8f * 7f)},
+            {(0.9f * 2f) + (0.8f * 4f)}
+        }
+    };
     float[][][] expectedProduct = {
         {
             {(0.1f * 1f) + (0.5f * 3f), (0.1f * 5f) + (0.5f * 7f), (0.1f * 2f) + (0.5f * 4f)},
@@ -73,6 +96,37 @@ public class MatrixTest{
         assertTrue("matrices should be equal", m1.equals(m2));
     }
 
+    @Test public void testMatrixTurn(){
+        Matrix m = new Matrix(arrays[0]);
+        m.turn();
+        if(m.getColumns() != arrays[0].length || m.getRows() != arrays[0][0].length){
+            fail("got matrix with unexpected amount of rows or columns");
+        }
+        boolean correctValues = true;
+        for(int row = 0; row < m.getRows(); row++){
+            for(int col = 0; col < m.getColumns(); col++){
+                if(m.getVal(row, col) != arrays[0][col][row]){
+                    correctValues = false;
+                }
+            }
+        }
+        assertTrue("every value should swap row and column in its location", correctValues);
+        m = new Matrix(arrays[2]);
+        m.turn();
+        if(m.getColumns() != arrays[2].length || m.getRows() != arrays[2][0].length){
+            fail("got matrix with unexpected amount of rows or columns");
+        }
+        correctValues = true;
+        for(int row = 0; row < m.getRows(); row++){
+            for(int col = 0; col < m.getColumns(); col++){
+                if(m.getVal(row, col) != arrays[2][col][row]){
+                    correctValues = false;
+                }
+            }
+        }
+        assertTrue("every value should swap row and column in its location", correctValues);
+    }
+
     @Test public void testMatrixProduct(){
         Matrix m1 = new Matrix(arrays[0]);
         Matrix m2 = new Matrix(arrays[2]);
@@ -84,6 +138,19 @@ public class MatrixTest{
         exp = new Matrix(expectedProduct[1]);
         res = Matrix.product(m1, m2);
         assertTrue("second product should be the same as expected", res.equals(exp));
+    }
+
+    @Test public void testMatrixSolve(){
+        Matrix m = new Matrix(arrays[0]);
+        Matrix v = new Matrix(vectors[0]);
+        Matrix exp = new Matrix(expectedVectors[0]);
+        Matrix res = Matrix.solve(m, v);
+        assertTrue("first result should be the same as expected", res.equals(exp));
+        m = new Matrix(arrays[2]);
+        v = new Matrix(vectors[1]);
+        exp = new Matrix(expectedVectors[1]);
+        res = Matrix.solve(m, v);
+        assertTrue("second result should be the same as expected", res.equals(exp));
     }
 
     @Test public void testMatrixScalarOperations(){

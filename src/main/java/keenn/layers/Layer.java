@@ -2,6 +2,8 @@ package keenn.layers;
 
 import keenn.Matrix;
 import keenn.neurons.Neuron;
+import keenn.functions.IFunction;
+import keenn.functions.Sigmoid;
 
 /**
  * Layer is simple implementation of ILayer interface.
@@ -10,9 +12,11 @@ import keenn.neurons.Neuron;
  */
 public class Layer{
     //contains neurons in this layer
-    Neurons[] neurons;
+    Neuron[] neurons;
     //contains synapses leadin to every neuron in the next layer
     Matrix synapses;
+    //contains activation function to be used for every neuron in this layer
+    IFunction function;
     //contains amount of neurons on this layer
     int size;
 
@@ -21,6 +25,7 @@ public class Layer{
      */
     Layer(){
         this.size = 0;
+        this.function = new Sigmoid();
     }
     
     /**
@@ -28,7 +33,8 @@ public class Layer{
      * @param size amount of neurons
      */
     Layer(int size){
-        this.neurons = new Neurons[size];
+        this.neurons = new Neuron[size];
+        this.function = new Sigmoid();
     }
 
     /**
@@ -45,6 +51,15 @@ public class Layer{
     }
 
     /**
+     * Sets activation function to be used for every neuron in this layer 
+     * (Sigmoid by default)
+     * @param function activatin function object
+     */
+    public void setFunction(IFunction function){
+        this.function = function;
+    }
+
+    /**
      * Sets zero as a value for every neuron in the layer
      */
     public void clear(){
@@ -57,7 +72,7 @@ public class Layer{
     /**
      * Updates amount of neurons
      */
-    private updateSize(){
+    private void updateSize(){
         this.size = this.neurons.length;
     }
 
