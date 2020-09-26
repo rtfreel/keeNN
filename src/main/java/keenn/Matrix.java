@@ -147,12 +147,12 @@ public class Matrix{
     }
 
     /**
-     * Fills matrix with random numbers between 0 and 1
+     * Fills matrix with random numbers between -1 and 1
      */
     public void randomize(){
         for(int row = 0; row < this.rows; row++){
             for(int col = 0; col < this.columns; col++){
-                this.matrix[row][col] = (float)Math.random();
+                this.matrix[row][col] = ((float)Math.random() * 2.0f) - 1.0f;
             }
         }
     }
