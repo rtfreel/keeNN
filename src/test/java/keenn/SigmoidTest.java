@@ -1,10 +1,8 @@
 package keenn;
 
 import org.junit.Test;
-
-import keenn.exceptions.MatrixDifferentSizeException;
-
 import static org.junit.Assert.*;
+import keenn.exceptions.MatrixDifferentSizeException;
 
 public class SigmoidTest{
     @Test public void testSigmoid(){

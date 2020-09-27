@@ -26,8 +26,8 @@ public class Layer{
     /**
      * Creaters default empty Layer object
      */
-    Layer(){
-        this.size = 0;
+    public Layer(){
+        this.createNeurons(0);
         this.outputSize = 0;
         this.function = new Sigmoid();
     }
@@ -36,9 +36,9 @@ public class Layer{
      * Creates new Layer object with specified amount of neurons
      * @param size amount of neurons
      */
-    Layer(int size){
+    public Layer(int size){
+        this.createNeurons(size);
         this.outputSize = 0;
-        this.neurons = new Neuron[size];
         this.function = new Sigmoid();
     }
 
@@ -59,7 +59,7 @@ public class Layer{
     public Matrix toVector(){
         Matrix result = new Matrix(this.size, 1);
         for(int row = 0; row < this.size; row++){
-            result.setVal(row, 0, neurons[row].getOutput());
+            result.setVal(row, 0, this.neurons[row].getOutput());
         }
         return result;
     }
@@ -70,13 +70,10 @@ public class Layer{
      * @param input Matrix object, only first row is matters, as a vector 
      */
     public void setInput(Matrix input) throws MatrixDifferentSizeException{
-        if(this.size != input.getRows()){
-            throw new MatrixDifferentSizeException("Vector should have as many values as many neurons is in that layer");
-        }
-        int row = 0;
-        int values = Math.min(this.size, input.getColumns());
+        int col = 0;
+        int values = Math.min(this.size, input.getRows());
         for(int val = 0; val < values; val++){
-            this.neurons[val].setInput(input.getVal(row, val));
+            this.neurons[val].setInput(input.getVal(val, col));
         }
     }
 
@@ -110,12 +107,24 @@ public class Layer{
     }
 
     /**
+     * Returns weight value of specified synapse
+     * @param from neuron where synapse begins
+     * @param to neuron where synapse ends
+     */
+    public float getWeight(int from, int to){
+        return this.weights.getVal(from, to);
+    }
+
+    /**
      * Sets all new weights values for every synapse in the current layer.
      * Amount of rows in the weights matix should be the same with amount of neurons in the layer
      * @param weights Matrix object, that contains new weight values for every synapse
      */
     public void setWeights(Matrix weights) throws MatrixDifferentSizeException{
-        if(this.size == weights.getRows() && (this.outputSize == 0 || this.outputSize == weights.getColumns())){
+        if(size == 0){
+            this.createNeurons(weights.getRows());
+            this.weights = weights;
+        }else if(this.size == weights.getRows() && (this.outputSize == 0 || this.outputSize == weights.getColumns())){
             this.weights = weights;
         }else{
             throw new MatrixDifferentSizeException("Matrix should have as many rows as many neurons is in that layer");
@@ -144,6 +153,18 @@ public class Layer{
     }
 
     /**
+     * Returns Matrix object with a vector of current signals of every neuron
+     * @return Matrix object with a vector
+     */
+    public Matrix getOutput(){
+        Matrix result = new Matrix(this.size, 1);
+        for(int neuron = 0; neuron < this.size; neuron++){
+            result.setVal(neuron, 0, this.neurons[neuron].getOutput());
+        }
+        return result;
+    }
+
+    /**
      * Sets zero as a value for every neuron in the layer
      */
     public void clear(){
@@ -151,13 +172,7 @@ public class Layer{
         for(int neuron = 0; neuron < this.size; neuron++){
             this.neurons[neuron].setInput(0.0f);
         }
-    }
-
-    /**
-     * Updates amount of neurons
-     */
-    private void updateSize(){
-        this.size = this.neurons.length;
+        this.weights.clear();
     }
 
     /**
@@ -167,5 +182,24 @@ public class Layer{
     public int getSize(){
         updateSize();
         return this.size;
+    }
+
+    /**
+     * Fills neurons array with objects
+     * @param amount amount of neurons
+     */
+    private void createNeurons(int amount){
+        this.neurons = new Neuron[amount];
+        for(int neuron = 0; neuron < amount; neuron++){
+            this.neurons[neuron] = new Neuron();
+        }
+        this.updateSize();
+    }
+
+    /**
+     * Updates amount of neurons
+     */
+    private void updateSize(){
+        this.size = this.neurons == null ? 0 : this.neurons.length;
     }
 }

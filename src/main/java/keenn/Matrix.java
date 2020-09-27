@@ -17,9 +17,7 @@ public class Matrix{
      * Creates default Matrix object with 1 row and 1 column
      */
     public Matrix(){
-        this.rows = 1;
-        this.columns = 1;
-        this.matrix = new float[rows][columns];
+        this.createMatrix(1, 1);
     }
     
     /**
@@ -28,9 +26,7 @@ public class Matrix{
      * @param columns amount of columns in the matrix
      */
     public Matrix(int rows, int columns){
-        this.rows = rows;
-        this.columns = columns;
-        this.matrix = new float[rows][columns];
+        this.createMatrix(rows, columns);
     }
 
     /**
@@ -324,6 +320,10 @@ public class Matrix{
         return result;
     }
 
+    /**
+     * Returns 2D array of float numbers
+     * @return float[][] array 
+     */
     public float[][] toArray(){
         return this.matrix;
     }
@@ -340,6 +340,17 @@ public class Matrix{
             this.matrix[row][column] = value;
         }catch(IndexOutOfBoundsException ioobe){
             ioobe.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets zero as a value everywhere in the Matrix
+     */
+    public void clear(){
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                this.matrix[row][col] = 0.0f;
+            }
         }
     }
 }

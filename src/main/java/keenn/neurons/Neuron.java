@@ -13,7 +13,7 @@ public class Neuron{
     /**
      * Creates default Neuron object
      */
-    Neuron(){
+    public Neuron(){
         this.signal = 0.0f;
         this.bias = 0.0f;
     }
