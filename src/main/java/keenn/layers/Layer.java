@@ -2,8 +2,9 @@ package keenn.layers;
 
 import keenn.Matrix;
 import keenn.neurons.Neuron;
-import keenn.functions.IFunction;
 import keenn.functions.Sigmoid;
+import keenn.functions.IFunction;
+import keenn.exceptions.MatrixDifferentSizeException;
 
 /**
  * Layer is simple implementation of ILayer interface.
@@ -13,18 +14,21 @@ import keenn.functions.Sigmoid;
 public class Layer{
     //contains neurons in this layer
     Neuron[] neurons;
-    //contains synapses leadin to every neuron in the next layer
-    Matrix synapses;
+    //contains weights of synapses leading to every neuron in the next layer
+    Matrix weights;
     //contains activation function to be used for every neuron in this layer
     IFunction function;
-    //contains amount of neurons on this layer
+    //contains amount of neurons in this layer
     int size;
+    //contains amount of neurons in the next layer
+    int outputSize;
 
     /**
      * Creaters default empty Layer object
      */
     Layer(){
         this.size = 0;
+        this.outputSize = 0;
         this.function = new Sigmoid();
     }
     
@@ -33,6 +37,7 @@ public class Layer{
      * @param size amount of neurons
      */
     Layer(int size){
+        this.outputSize = 0;
         this.neurons = new Neuron[size];
         this.function = new Sigmoid();
     }
@@ -43,7 +48,7 @@ public class Layer{
      */
     public Matrix solve(){
         Matrix result = null;
-        result = Matrix.solve(synapses, this.toVector());
+        result = Matrix.solve(weights, this.toVector());
         return result;
     }
 
@@ -64,7 +69,10 @@ public class Layer{
      * If input size is smaller than neurons amount extra neurons has zero as an input
      * @param input Matrix object, only first row is matters, as a vector 
      */
-    public void setInput(Matrix input){
+    public void setInput(Matrix input) throws MatrixDifferentSizeException{
+        if(this.size != input.getRows()){
+            throw new MatrixDifferentSizeException("Vector should have as many values as many neurons is in that layer");
+        }
         int row = 0;
         int values = Math.min(this.size, input.getColumns());
         for(int val = 0; val < values; val++){
@@ -79,6 +87,60 @@ public class Layer{
      */
     public void setFunction(IFunction function){
         this.function = function;
+    }
+
+    /**
+     * Activates every neuron in the layer or applies specified function
+     */
+    public void activate(){
+        this.function.prepare(this.neurons);
+        for(int neuron = 0; neuron < this.size; neuron++){
+            this.neurons[neuron].activate(this.function);
+        }
+    }
+
+    /**
+     * Sets weight value for specified synapse
+     * @param from neuron where synapse begins
+     * @param to neuron where synapse ends
+     * @param value weight value needed
+     */
+    public void setWeight(int from, int to, float value){
+        this.weights.setVal(from, to, value);
+    }
+
+    /**
+     * Sets all new weights values for every synapse in the current layer.
+     * Amount of rows in the weights matix should be the same with amount of neurons in the layer
+     * @param weights Matrix object, that contains new weight values for every synapse
+     */
+    public void setWeights(Matrix weights) throws MatrixDifferentSizeException{
+        if(this.size == weights.getRows() && (this.outputSize == 0 || this.outputSize == weights.getColumns())){
+            this.weights = weights;
+        }else{
+            throw new MatrixDifferentSizeException("Matrix should have as many rows as many neurons is in that layer");
+        }
+    }
+
+    /**
+     * Sets amount of neurons in the next layer and creates new weights matrix with this parameter
+     * @param outputSize amount of neurons in the next layer
+     * @param randomize if true weights matrix will be full of random values
+     */
+    public void setOutputSize(int outputSize, boolean randomize){
+        this.outputSize = outputSize;
+        if(this.weights == null){
+            try{
+                this.setWeights(new Matrix(this.size, this.outputSize));
+            }catch(MatrixDifferentSizeException mdse){
+                mdse.printStackTrace();
+            }
+        }else{
+            this.weights.createMatrix(this.size, this.outputSize);
+        }
+        if(randomize){
+            this.weights.randomize();
+        }
     }
 
     /**

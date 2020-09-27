@@ -1,10 +1,17 @@
 package keenn.functions;
 
+import keenn.neurons.Neuron;
+
 /**
  * Sigmoid is a simple activation function which gives result between 0 and 1
  * @author Tkachenko Roman
  */
 public class Sigmoid implements IFunction{
+    /**
+     * Sigmoid does not need any preparations
+     */
+    public void prepare(Neuron[] neurons){}
+
     /**
      * Receives any value and returns value within [0, 1]
      * @param argument
