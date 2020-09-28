@@ -53,15 +53,13 @@ public class Layer{
     }
 
     /**
-     * Collects signals of all neurons in the layer into the vector
-     * @return Matrix object with the vector
+     * Activates every neuron in the layer or applies specified function
      */
-    public Matrix toVector(){
-        Matrix result = new Matrix(this.size, 1);
-        for(int row = 0; row < this.size; row++){
-            result.setVal(row, 0, this.neurons[row].getOutput());
+    public void activate(){
+        this.function.prepare(this.neurons);
+        for(int neuron = 0; neuron < this.size; neuron++){
+            this.neurons[neuron].activate(this.function);
         }
-        return result;
     }
 
     /**
@@ -78,6 +76,18 @@ public class Layer{
     }
 
     /**
+     * Returns Matrix object with a vector of current signals of every neuron
+     * @return Matrix object with a vector
+     */
+    public Matrix getNeuronsOutput(){
+        Matrix result = new Matrix(this.size, 1);
+        for(int neuron = 0; neuron < this.size; neuron++){
+            result.setVal(neuron, 0, this.neurons[neuron].getOutput());
+        }
+        return result;
+    }
+
+    /**
      * Sets activation function to be used for every neuron in this layer 
      * (Sigmoid by default)
      * @param function activatin function object
@@ -87,13 +97,12 @@ public class Layer{
     }
 
     /**
-     * Activates every neuron in the layer or applies specified function
+     * Returns weight value of specified synapse
+     * @param from neuron where synapse begins
+     * @param to neuron where synapse ends
      */
-    public void activate(){
-        this.function.prepare(this.neurons);
-        for(int neuron = 0; neuron < this.size; neuron++){
-            this.neurons[neuron].activate(this.function);
-        }
+    public float getWeight(int from, int to){
+        return this.weights.getVal(from, to);
     }
 
     /**
@@ -107,12 +116,11 @@ public class Layer{
     }
 
     /**
-     * Returns weight value of specified synapse
-     * @param from neuron where synapse begins
-     * @param to neuron where synapse ends
+     * Returns Matrix object with weights of synapces in this layer
+     * @return
      */
-    public float getWeight(int from, int to){
-        return this.weights.getVal(from, to);
+    public Matrix getWeights(){
+        return this.weights;
     }
 
     /**
@@ -129,6 +137,49 @@ public class Layer{
         }else{
             throw new MatrixDifferentSizeException("Matrix should have as many rows as many neurons is in that layer");
         }
+    }
+
+    public void setNeurons(Neuron[] neurons){
+        if(neurons == null){
+            this.neurons = neurons;
+        }else{
+            this.createNeurons(neurons.length);
+            for(int neuron = 0; neuron < this.size; neuron++){
+                this.setNeuron(neurons[neuron], neuron);
+            }
+        }
+    }
+
+    /**
+     * Returns array of neurons in the layer
+     * @return
+     */
+    public Neuron[] getNeurons(){
+        return this.neurons;
+    }
+    
+    /**
+     * Sets particular Neuron object into the layer at the specified position
+     * @param neuron object to set
+     * @param position
+     */
+    public void setNeuron(Neuron neuron, int position){
+        if(this.size > position){
+            if(neuron != null){
+                this.neurons[position] = neuron;
+            }else{
+                this.neurons[position] = new Neuron();
+            }
+        }
+    }
+
+    /**
+     * Returns Neuron object from particular position in the layer
+     * @param position 
+     * @return
+     */
+    public Neuron getNeuron(int position){
+        return this.neurons[position];
     }
 
     /**
@@ -153,18 +204,6 @@ public class Layer{
     }
 
     /**
-     * Returns Matrix object with a vector of current signals of every neuron
-     * @return Matrix object with a vector
-     */
-    public Matrix getOutput(){
-        Matrix result = new Matrix(this.size, 1);
-        for(int neuron = 0; neuron < this.size; neuron++){
-            result.setVal(neuron, 0, this.neurons[neuron].getOutput());
-        }
-        return result;
-    }
-
-    /**
      * Sets zero as a value for every neuron in the layer
      */
     public void clear(){
@@ -182,6 +221,18 @@ public class Layer{
     public int getSize(){
         updateSize();
         return this.size;
+    }
+
+    /**
+     * Collects signals of all neurons in the layer into the vector
+     * @return Matrix object with the vector
+     */
+    public Matrix toVector(){
+        Matrix result = new Matrix(this.size, 1);
+        for(int row = 0; row < this.size; row++){
+            result.setVal(row, 0, this.neurons[row].getOutput());
+        }
+        return result;
     }
 
     /**

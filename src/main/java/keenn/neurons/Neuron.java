@@ -19,6 +19,14 @@ public class Neuron{
     }
 
     /**
+     * Creates default Neuron object with initial signal specified
+     */
+    public Neuron(float signal){
+        this.signal = signal;
+        this.bias = 0.0f;
+    }
+
+    /**
      * Activates neuron with chosen activation function
      * @param function (implementation of IActivationFunction)
      */
