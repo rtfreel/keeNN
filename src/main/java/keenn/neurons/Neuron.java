@@ -6,9 +6,9 @@ package keenn.neurons;
  */
 public class Neuron{
     //current signal of neuron
-    float signal;
+    private float signal;
     //individual number to modify signal
-    float bias;
+    private float bias;
 
     /**
      * Creates default Neuron object

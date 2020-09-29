@@ -47,12 +47,8 @@ public class LayerTest{
         for(int test = 0; test < 2; test++){
             Matrix input = new Matrix(vectors[test]);
             Layer l = new Layer(vectors[test].length);
-            try{
-                l.setInput(input);
-            }catch(MatrixDifferentSizeException mdse){
-                fail("got an unexpected MatrixDifferentSizeException");
-            }
-            assertTrue("output matrix should be equals to the input one", input.equals(l.getNeuronsOutput()));
+            l.setInput(input);
+            assertTrue("output matrix should be equals to the input one", input.equals(l.getOutput()));
         }
     }
 
@@ -74,7 +70,7 @@ public class LayerTest{
             }
         }
         Layer l = new Layer(16);
-        l.setOutputSize(8, false);
+        l.setOutputSize(8);
         for(int row = 0; row < 16; row++){
             for(int col = 0; col < 8; col++){
                 assertTrue("every weight should be equal to 0", l.getWeight(row, col) == 0.0f);
