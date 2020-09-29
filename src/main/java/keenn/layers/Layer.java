@@ -11,17 +11,19 @@ import keenn.exceptions.MatrixDifferentSizeException;
  * Every neuron is connected neurons with every neuron in the next layer
  * @author Tkachenko Roman
  */
-public class Layer{
+public class Layer implements ILayer{
+    //type of the Layer
+    private static final Type type = Type.SIMPLE;
     //contains neurons in this layer
-    Neuron[] neurons;
+    private Neuron[] neurons;
     //contains weights of synapses leading to every neuron in the next layer
-    Matrix weights;
+    private Matrix weights;
     //contains activation function to be used for every neuron in this layer
-    IFunction function;
+    private IFunction function;
     //contains amount of neurons in this layer
-    int size;
+    private int size;
     //contains amount of neurons in the next layer
-    int outputSize;
+    private int outputSize;
 
     /**
      * Creaters default empty Layer object
@@ -53,7 +55,7 @@ public class Layer{
     }
 
     /**
-     * Activates every neuron in the layer or applies specified function
+     * Activates every neuron in the layer or applies function
      */
     public void activate(){
         this.function.prepare(this.neurons);
@@ -64,10 +66,11 @@ public class Layer{
 
     /**
      * Sets input value for every neuron.
-     * If input size is smaller than neurons amount extra neurons has zero as an input
+     * If input size is smaller than neurons amount extra neurons has zero as an input.
+     * If input size is bigger than neurons amount extra input values will not be used
      * @param input Matrix object, only first row is matters, as a vector 
      */
-    public void setInput(Matrix input) throws MatrixDifferentSizeException{
+    public void setInput(Matrix input){
         int col = 0;
         int values = Math.min(this.size, input.getRows());
         for(int val = 0; val < values; val++){
@@ -79,7 +82,7 @@ public class Layer{
      * Returns Matrix object with a vector of current signals of every neuron
      * @return Matrix object with a vector
      */
-    public Matrix getNeuronsOutput(){
+    public Matrix getOutput(){
         Matrix result = new Matrix(this.size, 1);
         for(int neuron = 0; neuron < this.size; neuron++){
             result.setVal(neuron, 0, this.neurons[neuron].getOutput());
@@ -90,10 +93,18 @@ public class Layer{
     /**
      * Sets activation function to be used for every neuron in this layer 
      * (Sigmoid by default)
-     * @param function activatin function object
+     * @param function activation or another function object
      */
     public void setFunction(IFunction function){
         this.function = function;
+    }
+
+    /**
+     * Returns current IFunction object
+     * @return IFunction object
+     */
+    public IFunction getFunction(){
+        return this.function;
     }
 
     /**
@@ -139,6 +150,17 @@ public class Layer{
         }
     }
 
+    /**
+     * Randomizes synapses' weight values in the layer
+     */
+    public void randomize(){
+        this.weights.randomize();
+    }
+
+    /**
+     * Sets array of neurons into the layer
+     * @param neurons
+     */
     public void setNeurons(Neuron[] neurons){
         if(neurons == null){
             this.neurons = neurons;
@@ -185,9 +207,8 @@ public class Layer{
     /**
      * Sets amount of neurons in the next layer and creates new weights matrix with this parameter
      * @param outputSize amount of neurons in the next layer
-     * @param randomize if true weights matrix will be full of random values
      */
-    public void setOutputSize(int outputSize, boolean randomize){
+    public void setOutputSize(int outputSize){
         this.outputSize = outputSize;
         if(this.weights == null){
             try{
@@ -197,9 +218,6 @@ public class Layer{
             }
         }else{
             this.weights.createMatrix(this.size, this.outputSize);
-        }
-        if(randomize){
-            this.weights.randomize();
         }
     }
 
@@ -233,6 +251,15 @@ public class Layer{
             result.setVal(row, 0, this.neurons[row].getOutput());
         }
         return result;
+    }
+    
+    /**
+     * Returns type of the layer
+     * (SIMPLE)
+     * @return Type
+     */
+    public Type getType(){
+        return Layer.type;
     }
 
     /**
