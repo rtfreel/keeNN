@@ -17,9 +17,7 @@ public class Matrix{
      * Creates default Matrix object with 1 row and 1 column
      */
     public Matrix(){
-        this.rows = 1;
-        this.columns = 1;
-        this.matrix = new float[this.rows][this.columns];
+        this.createMatrix(1, 1);
     }
     
     /**
@@ -28,9 +26,7 @@ public class Matrix{
      * @param columns amount of columns in the matrix
      */
     public Matrix(int rows, int columns){
-        this.rows = rows;
-        this.columns = columns;
-        this.matrix = new float[rows][columns];
+        this.createMatrix(rows, columns);
     }
 
     /**
@@ -60,7 +56,8 @@ public class Matrix{
 
     /**
      * Multiplies two matrices and returns new Matrix object with matrix as a result. 
-     * Only works when amount of columns in first matrix equals to amount of rows in second and. 
+     * Only works when amount of columns in the first matrix equals to amount of rows 
+     * in the second one. 
      * Otherwise, returns default Matrix object.
      * @param a first matrix to multiply
      * @param b second matrix to multiply by
@@ -84,6 +81,37 @@ public class Matrix{
             }
         }catch(MatrixDifferentSizeException mdse){
             mdse.printStackTrace();
+            result = new Matrix();
+        }
+        return result;
+    }
+
+    /**
+     * Solves matix and vector and returns new Matrix object with vector as a result.
+     * Only works if either have the same amount of rows.
+     * Otherwise, returns default Matrix object.
+     * @param weights matrix of weights of synapses
+     * @param signalsVector vector of signals of neurons
+     * @return vector of signals to be an input for the next layer
+     */
+    public static Matrix solve(Matrix weights, Matrix signalsVector){
+        int signalsCol = 0;
+        Matrix result = null;
+        try{
+            if(signalsVector.getRows() != weights.getRows()){
+                throw new MatrixDifferentSizeException("These matrices cannot be solved");
+            }
+            result = new Matrix(weights.getColumns(), 1);
+            for(int weightCol = 0; weightCol < weights.getColumns(); weightCol++){
+                float num = 0.0f;
+                for(int weightRow = 0; weightRow < signalsVector.getRows(); weightRow++){
+                    num += weights.getVal(weightRow, weightCol) * signalsVector.getVal(weightRow, signalsCol);
+                }
+                result.setVal(weightCol, signalsCol, num);
+            }
+        }catch(MatrixDifferentSizeException mdse){
+            mdse.printStackTrace();
+            result = new Matrix();
         }
         return result;
     }
@@ -142,17 +170,30 @@ public class Matrix{
                 }
             }
         }else{
-            throw new MatrixDifferentSizeException("Connot add matrices with different sizes");
+            throw new MatrixDifferentSizeException("Cannot add matrices with different sizes");
         }
     }
 
     /**
-     * Fills matrix with random numbers between 0 and 1
+     * Turns matrix, so every value(x, y) becomes value(y, x)
+     */
+    public void turn(){
+        float[][] oldMatrix = this.toArray();
+        this.createMatrix(this.columns, this.rows);
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                this.matrix[row][col] = oldMatrix[col][row];
+            }
+        }
+    }
+
+    /**
+     * Fills matrix with random numbers between -1 and 1
      */
     public void randomize(){
         for(int row = 0; row < this.rows; row++){
             for(int col = 0; col < this.columns; col++){
-                this.matrix[row][col] = (float)Math.random();
+                this.matrix[row][col] = ((float)Math.random() * 2.0f) - 1.0f;
             }
         }
     }
@@ -279,6 +320,10 @@ public class Matrix{
         return result;
     }
 
+    /**
+     * Returns 2D array of float numbers
+     * @return float[][] array 
+     */
     public float[][] toArray(){
         return this.matrix;
     }
@@ -295,6 +340,17 @@ public class Matrix{
             this.matrix[row][column] = value;
         }catch(IndexOutOfBoundsException ioobe){
             ioobe.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets zero as a value everywhere in the Matrix
+     */
+    public void clear(){
+        for(int row = 0; row < this.rows; row++){
+            for(int col = 0; col < this.columns; col++){
+                this.matrix[row][col] = 0.0f;
+            }
         }
     }
 }
